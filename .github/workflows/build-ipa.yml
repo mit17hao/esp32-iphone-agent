@@ -1,0 +1,43 @@
+name: Build unsigned IPA
+
+# Builds the iOS app for a real device WITHOUT any signing (public-repo macos runners need
+# no payment and no Apple account). The .ipa is unsigned: SideStore / Sideloadly / AltServer
+# re-sign it on your PC with a free Apple ID before installing.
+# Your bundle ID is derived from the repo owner; edit the printf line below to change it.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["ios/**", "prompts/**", ".github/workflows/build-ipa.yml"]
+
+jobs:
+  ipa:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Generate Local.xcconfig (bundle id only, no entitlements on a free account)
+        working-directory: ios
+        run: printf 'IA_BUNDLE_ID = com.%s.esp32agent\n' "$GITHUB_REPOSITORY_OWNER" > Config/Local.xcconfig
+
+      - name: Build device app (unsigned)
+        working-directory: ios
+        run: |
+          xcodebuild -project IPhoneAgent.xcodeproj -scheme IPhoneAgent \
+            -configuration Release -destination "generic/platform=iOS" \
+            -derivedDataPath build CODE_SIGNING_ALLOWED=NO
+
+      - name: Package IPA
+        run: |
+          APP=$(find ios/build/Build/Products/Release-iphoneos -maxdepth 1 -name '*.app' | head -1)
+          test -n "$APP"
+          STAGE=$(mktemp -d)
+          mkdir "$STAGE/Payload"
+          cp -R "$APP" "$STAGE/Payload/"
+          cd "$STAGE" && zip -qr "$GITHUB_WORKSPACE/IPhoneAgent-unsigned.ipa" Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IPhoneAgent-unsigned-ipa
+          path: IPhoneAgent-unsigned.ipa
