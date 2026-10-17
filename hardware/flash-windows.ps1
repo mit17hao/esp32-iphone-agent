@@ -1,6 +1,6 @@
 ﻿#!/usr/bin/env pwsh
 # Windows 版刷机脚本(等价 hardware/flash.sh),按 ESP32-S3-DevKitC-1 N16R8 定制:
-#   16MB flash + 8MB octal PSRAM  ->  FlashSize=16M, PSRAM=opi, PartitionScheme=default_16MB
+#   16MB flash + 8MB octal PSRAM  ->  FlashSize=16M, PSRAM=opi, PartitionScheme=app3M_fat9M_16MB (3.3.12 无 default_16MB 档位)
 # 建议用板子的 UART 口刷机(板载 USB-UART 桥自动进 boot);运行时与 iPhone 通信必须用 USB 原生口。
 #
 # Usage: powershell -ExecutionPolicy Bypass -File flash-windows.ps1 [-Port COM5] [-DebugSerial] [-Sta] [-BuildOnly] [-ApTune] [-Fqbn <str>]
@@ -31,8 +31,8 @@ if (-not $cli -or -not (Test-Path $cli)) { $cli = "C:\Program Files\Arduino CLI\
 if (-not (Test-Path $cli)) { throw "找不到 arduino-cli(winget install -e --id ArduinoSA.CLI)" }
 Write-Host "arduino-cli: $cli"
 
-# DevKitC-1 N16R8 默认 FQBN(XIAO 用法见 README 的 FlashSize=8M/default_8MB)
-if (-not $Fqbn) { $Fqbn = "esp32:esp32:esp32s3:USBMode=default,CDCOnBoot=cdc,FlashSize=16M,PSRAM=opi,PartitionScheme=default_16MB" }
+# DevKitC-1 N16R8 默认 FQBN(XIAO 用法见 README 的 FlashSize=8M/default_8MB;3.3.12 无 default_16MB档位,取 app3M_fat9M_16MB)
+if (-not $Fqbn) { $Fqbn = "esp32:esp32:esp32s3:USBMode=default,CDCOnBoot=cdc,FlashSize=16M,PSRAM=opi,PartitionScheme=app3M_fat9M_16MB" }
 Write-Host "FQBN:        $Fqbn"
 
 $defs = @()

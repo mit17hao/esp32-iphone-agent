@@ -22,7 +22,7 @@ powershell -ExecutionPolicy Bypass -File hardware\flash-windows.ps1 -Port COM5
 
 要点与坑:
 - **刷机用 UART 口**(板载 USB-UART 桥,自动进 boot);**运行时给 iPhone 必须用另一个"USB"口**(S3 原生 USB,HID 就出在这个口)。
-- FQBN 已按 N16R8 定制:`FlashSize=16M, PSRAM=opi, PartitionScheme=default_16MB`。其他 SKU:N8R8 用 `FlashSize=8M/default_8MB`;N8R2 把 `PSRAM=opi` 改成 quad(`default`)——R2 只有 2MB PSRAM,固件按 8MB 调试,可能跑不动。
+- FQBN 已按 N16R8 定制:`FlashSize=16M, PSRAM=opi, PartitionScheme=app3M_fat9M_16MB`(固件 1.46MB,必须 3MB APP 分区;3.3.12 无 `default_16MB` 档位)。其他 SKU:N8R8 用 `FlashSize=8M/default_8MB`;N8R2 把 `PSRAM=opi` 改成 quad(`default`)——R2 只有 2MB PSRAM,固件按 8MB 调试,可能跑不动。
 - **仓库路径不能含空格**(固件用 `-include` 绝对路径强制注入 NimBLE 配置,空格会被编译器拆参)。本仓库建议放 `D:\esp32-iphone-agent`。
 - Windows PowerShell 5.x 需要脚本带 UTF-8 BOM(本仓库的 flash-windows.ps1 已带);执行策略用 `-ExecutionPolicy Bypass`。
 - 烧录时若一直卡 Connecting:按住 **BOOT** 再点一下 **RST**(进 boot 模式)后重试。
