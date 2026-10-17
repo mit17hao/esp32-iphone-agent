@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+﻿#!/usr/bin/env pwsh
 # Windows 版刷机脚本(等价 hardware/flash.sh),按 ESP32-S3-DevKitC-1 N16R8 定制:
 #   16MB flash + 8MB octal PSRAM  ->  FlashSize=16M, PSRAM=opi, PartitionScheme=default_16MB
 # 建议用板子的 UART 口刷机(板载 USB-UART 桥自动进 boot);运行时与 iPhone 通信必须用 USB 原生口。
